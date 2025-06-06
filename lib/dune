@@ -1,0 +1,8 @@
+(library
+ (name open_lambda))
+
+(ocamllex lexer)
+
+(menhir
+ (modules parser)
+ (flags --dump))

@@ -33,7 +33,7 @@ prog:
     | expr; EOF { $1 }
 expr:
     | apply { $1 }
-    | FUN; param = ID; RARROW; body = expr                 { Fn (param, body) }
+    | FUN; param = ID; RARROW; body = expr                { Fn (param, body) }
     | LET; x = ID; EQ; e1 = expr; IN; e2 = expr           { Let (x, e1, e2) }
     | IF; pred = expr; THEN; con = expr; ELSE; alt = expr { If (pred, con, alt) }
     | left = expr; op = bop; right = expr                 { Bop (op, left, right) }

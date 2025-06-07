@@ -12,7 +12,7 @@ module Expr = struct
   type const = Int of int | Bool of bool
   type id = Id.t
   type bop = Plus | Minus | Times | Eq
-  
+
   type t =
     | Const of const
     | Var of id
@@ -42,13 +42,17 @@ module Expr = struct
     | Fn (x, e) ->
         let lvl = lvl + 1 in
         Printf.sprintf "fun %s → (\n%s)" x (to_string ~lvl e)
-    | App (e1, e2) -> Printf.sprintf "(%s) (%s)" (to_string e1) (to_string ~lvl e2)
+    | App (e1, e2) ->
+        Printf.sprintf "(%s) (%s)" (to_string e1) (to_string ~lvl e2)
     | Let (x, e1, e2) ->
         Printf.sprintf "let %s = %s in\n%s" x (to_string e1) (to_string ~lvl e2)
     | If (e_pred, e_con, e_alt) ->
         let lvl = lvl + 1 in
-        Printf.sprintf "if %s then\n%s else\n%s" (to_string e_pred) (to_string ~lvl e_con) (to_string ~lvl e_alt)
-    | Bop (op, e1, e2) -> Printf.sprintf "(%s %s %s)" (to_string e1) (string_of_bop op) (to_string e2)
+        Printf.sprintf "if %s then\n%s else\n%s" (to_string e_pred)
+          (to_string ~lvl e_con) (to_string ~lvl e_alt)
+    | Bop (op, e1, e2) ->
+        Printf.sprintf "(%s %s %s)" (to_string e1) (string_of_bop op)
+          (to_string e2)
     | Box e -> Printf.sprintf "`(%s)" (to_string e)
     | Unbox e -> Printf.sprintf ",%s" (to_string e)
 end

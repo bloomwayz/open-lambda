@@ -7,7 +7,7 @@ open Expr
 %token TRUE FALSE
 %token <int> INT
 %token <string> ID
-%token FUN LET IN END
+%token FUN LET IN
 %token IF THEN ELSE
 %token EQ
 %token PLUS MINUS AST

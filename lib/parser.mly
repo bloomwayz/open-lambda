@@ -16,8 +16,9 @@ open Expr
 %token QUOTE COMMA
 %token EOF
 
-%nonassoc RARROW
+%nonassoc IN
 %nonassoc ELSE
+%nonassoc RARROW
 %left     EQ
 %left     PLUS MINUS
 %left     AST

@@ -4,7 +4,7 @@ exception Run_error of string
 exception Type_error of string
 
 module rec Value : sig
-  type t = Int of int | Bool of bool | Closure of closure | Staged of Expr.t
+  type t = Int of int | Bool of bool | Closure of closure | Staged of t | Unstaged of t
   and closure = fexpr * Env.t
   and fexpr = Fun of Id.t * Expr.t | Rec of Id.t * Id.t * Expr.t
 
@@ -13,7 +13,7 @@ module rec Value : sig
   val to_closure : t -> closure
   val to_string : t -> string
 end = struct
-  type t = Int of int | Bool of bool | Closure of closure | Staged of Expr.t
+  type t = Int of int | Bool of bool | Closure of closure | Staged of t | Unstaged of t
   and closure = fexpr * Env.t
   and fexpr = Fun of Id.t * Expr.t | Rec of Id.t * Id.t * Expr.t
 
@@ -30,7 +30,8 @@ end = struct
     | Bool false -> "false"
     | Closure (Fun (x, e), _) -> "λ" ^ x ^ ".(" ^ Expr.to_string e ^ ")"
     | Closure (Rec (_, x, e), _) -> "λ" ^ x ^ ".(" ^ Expr.to_string e ^ ")"
-    | Staged e -> "box " ^ Expr.to_string e
+    | Staged v -> "box " ^ to_string v
+    | Unstaged v -> "unbox " ^ to_string v
 end
 
 and Env : sig
@@ -90,7 +91,12 @@ let rec eval env : Expr.t -> Value.t = function
       let v1 = eval env e1 in
       let v2 = eval env e2 in
       op_to_fn op (v1, v2)
-  | Box e | Unbox e ->
-      raise (Run_error "Multi-staged interpreter unimplemented")
+  | Box e ->
+      let v = eval env e in
+      Staged v
+  | Unbox e -> (
+      match (eval env e) with
+      | Staged v -> v
+      | v -> Unstaged v)
 
 let run exp = eval Env.empty exp

@@ -49,7 +49,7 @@ let op_to_fn : Expr.bop -> Value.t * Value.t -> Value.t =
   function
   | Plus -> fun (v1, v2) -> Int (to_int v1 + to_int v2)
   | Minus -> fun (v1, v2) -> Int (to_int v1 - to_int v2)
-  | Times -> fun (v1, v2) -> Int (to_int v1 - to_int v2)
+  | Times -> fun (v1, v2) -> Int (to_int v1 * to_int v2)
   | Eq -> (
       fun (v1, v2) ->
         match (v1, v2) with

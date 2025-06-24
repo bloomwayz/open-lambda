@@ -6,7 +6,7 @@ exception Type_error of string
 module rec Value : sig
   type t = Int of int | Bool of bool | Closure of closure | Staged of Expr.t
   and closure = fexpr * Env.t
-  and fexpr = Fun of Id.t * Expr.t
+  and fexpr = Fun of Id.t * Expr.t | Rec of Id.t * Id.t * Expr.t
 
   val to_int : t -> int
   val to_bool : t -> bool
@@ -15,7 +15,7 @@ module rec Value : sig
 end = struct
   type t = Int of int | Bool of bool | Closure of closure | Staged of Expr.t
   and closure = fexpr * Env.t
-  and fexpr = Fun of Id.t * Expr.t
+  and fexpr = Fun of Id.t * Expr.t | Rec of Id.t * Id.t * Expr.t
 
   let to_int = function Int n -> n | _ -> raise (Type_error "not an int")
   let to_bool = function Bool b -> b | _ -> raise (Type_error "not a bool")
@@ -29,6 +29,7 @@ end = struct
     | Bool true -> "true"
     | Bool false -> "false"
     | Closure (Fun (x, e), _) -> "λ" ^ x ^ ".(" ^ Expr.to_string e ^ ")"
+    | Closure (Rec (_, x, e), _) -> "λ" ^ x ^ ".(" ^ Expr.to_string e ^ ")"
     | Staged e -> "box " ^ Expr.to_string e
 end
 
@@ -69,10 +70,18 @@ let rec eval env : Expr.t -> Value.t = function
       let v1 = eval env e1 in
       let v2 = eval env e2 in
       let c, env' = Value.to_closure v1 in
-      match c with Fun (x, e) -> eval (Env.add x v2 env') e)
+      match c with
+      | Fun (x, e) -> eval (Env.add x v2 env') e
+      | Rec (f, x, e) ->
+          let env'' = env' |> Env.add x v2 |> Env.add f v1 in
+          eval env'' e)
   | Let (x, e1, e2) ->
       let v1 = eval env e1 in
       let env' = Env.add x v1 env in
+      eval env' e2
+  | Rec (f, x, e1, e2) ->
+      let closure = Value.Closure (Rec (f, x, e1), env) in
+      let env' = Env.add f closure env in
       eval env' e2
   | If (e_pred, e_con, e_alt) ->
       let v1 = eval env e_pred in

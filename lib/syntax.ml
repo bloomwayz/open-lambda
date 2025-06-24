@@ -19,6 +19,7 @@ module Expr = struct
     | Fn of id * t
     | App of t * t
     | Let of id * t * t
+    | Rec of id * id * t * t
     | If of t * t * t
     | Bop of bop * t * t
     | Box of t
@@ -46,6 +47,8 @@ module Expr = struct
         Printf.sprintf "(%s) (%s)" (to_string e1) (to_string ~lvl e2)
     | Let (x, e1, e2) ->
         Printf.sprintf "let %s = %s in\n%s" x (to_string e1) (to_string ~lvl e2)
+    | Rec (f, x, e1, e2) ->
+        Printf.sprintf "let rec %s %s = %s in\n%s" f x (to_string e1) (to_string ~lvl e2)
     | If (e_pred, e_con, e_alt) ->
         let lvl = lvl + 1 in
         Printf.sprintf "if %s then\n%s else\n%s" (to_string e_pred)

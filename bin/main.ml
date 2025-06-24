@@ -16,8 +16,11 @@ let main () =
     Lexing.from_channel (if !src = "" then stdin else open_in !src)
   in
   let pgm = Parser.prog Lexer.read lexbuf in
-  let open Syntax.Expr in
-  if !opt_pp then to_string pgm |> print_endline;
-  if not !opt_pp then Interp.run pgm
+  if !opt_pp then (
+    let open Syntax.Expr in
+    to_string pgm |> print_endline);
+  if not !opt_pp then (
+    let open Interp in
+    run pgm |> Value.to_string |> print_endline)
 
 let () = main ()

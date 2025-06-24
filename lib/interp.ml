@@ -11,6 +11,7 @@ module rec Value : sig
   val to_int : t -> int
   val to_bool : t -> bool
   val to_closure : t -> closure
+  val to_string : t -> string
 end = struct
   type t = Int of int | Bool of bool | Closure of closure | Staged of Expr.t
   and closure = fexpr * Env.t
@@ -22,6 +23,13 @@ end = struct
   let to_closure = function
     | Closure c -> c
     | _ -> raise (Type_error "not a function")
+
+  let rec to_string = function
+    | Int n -> Int.to_string n
+    | Bool true -> "true"
+    | Bool false -> "false"
+    | Closure (Fun (x, e), _) -> "λ" ^ x ^ ".(" ^ Expr.to_string e ^ ")"
+    | Staged e -> "box " ^ Expr.to_string e
 end
 
 and Env : sig
@@ -76,4 +84,4 @@ let rec eval env : Expr.t -> Value.t = function
   | Box e | Unbox e ->
       raise (Run_error "Multi-staged interpreter unimplemented")
 
-let run exp = ignore (eval Env.empty exp)
+let run exp = eval Env.empty exp

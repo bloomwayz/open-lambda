@@ -19,7 +19,8 @@ let keywords =
       ("let", LET);
       ("rec", REC);
       ("in", IN);
-      ("fun", FUN)
+      ("fun", FUN);
+      ("run", RUN)
     ];
   tbl
 

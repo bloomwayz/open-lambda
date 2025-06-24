@@ -98,5 +98,6 @@ let rec eval env : Expr.t -> Value.t = function
       match (eval env e) with
       | Staged v -> v
       | v -> Unstaged v)
+  | Eval e -> raise (Run_error "Eval unimplemented")
 
 let run exp = eval Env.empty exp

@@ -24,6 +24,7 @@ module Expr = struct
     | Bop of bop * t * t
     | Box of t
     | Unbox of t
+    | Eval of t
 
   let indent (lvl : int) (f : 'a -> string) : 'a -> string =
    fun x -> String.init (2 * lvl) (fun _ -> ' ') ^ f x
@@ -58,4 +59,5 @@ module Expr = struct
           (to_string e2)
     | Box e -> Printf.sprintf "`(%s)" (to_string e)
     | Unbox e -> Printf.sprintf ",%s" (to_string e)
+    | Eval e -> Printf.sprintf "run %s" (to_string e)
 end

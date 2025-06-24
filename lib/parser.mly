@@ -13,7 +13,7 @@ open Expr
 %token PLUS MINUS AST
 %token LPAREN RPAREN
 %token RARROW
-%token QUOTE COMMA
+%token QUOTE COMMA RUN
 %token EOF
 
 %nonassoc IN
@@ -24,6 +24,7 @@ open Expr
 %left     AST
 %nonassoc COMMA
 %nonassoc QUOTE
+%nonassoc RUN
 
 %start <Expr.t> prog
 %type <Expr.t> expr
@@ -40,6 +41,7 @@ expr:
     | left = expr; op = bop; right = expr                    { Bop (op, left, right) }
     | QUOTE; e = expr                                        { Box e }
     | COMMA; e = expr                                        { Unbox e }
+    | RUN; e = expr                                          { Eval e }
 %inline bop:
     | EQ    { Eq }
     | PLUS  { Plus }
